@@ -21,6 +21,7 @@ import org.jetbrains.kotlin.descriptors.impl.DeclarationDescriptorVisitorEmptyBo
 import org.jetbrains.kotlin.load.java.JvmAbi
 import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.renderer.DescriptorRenderer
+import org.jetbrains.kotlin.resolve.DescriptorUtils
 import org.jetbrains.kotlin.resolve.scopes.MemberScope
 import java.lang.reflect.Constructor
 import java.lang.reflect.Method
@@ -55,7 +56,7 @@ internal abstract class KDeclarationContainerImpl : ClassBasedDeclarationContain
                 createProperty(descriptor)
 
             override fun visitFunctionDescriptor(descriptor: FunctionDescriptor, data: Unit): KCallableImpl<*> =
-                KFunctionImpl(this@KDeclarationContainerImpl, descriptor)
+                createFunction(descriptor)
 
             override fun visitConstructorDescriptor(descriptor: ConstructorDescriptor, data: Unit): KCallableImpl<*> =
                 throw IllegalStateException("No constructors should appear in this scope: $descriptor")
@@ -77,24 +78,48 @@ internal abstract class KDeclarationContainerImpl : ClassBasedDeclarationContain
             member.kind.isReal == (this == DECLARED)
     }
 
-    private fun createProperty(descriptor: PropertyDescriptor): KPropertyImpl<*> {
+    private fun createFunction(possibleFakeOverride: FunctionDescriptor): KFunctionImpl {
+        val descriptor = unwrapFakeOverride(possibleFakeOverride)
+        return KFunctionImpl(computeDeclarationContainer(descriptor), descriptor)
+    }
+
+    private fun createProperty(possibleFakeOverride: PropertyDescriptor): KPropertyImpl<*> {
+        val descriptor = unwrapFakeOverride(possibleFakeOverride)
         val receiverCount = (descriptor.dispatchReceiverParameter?.let { 1 } ?: 0) +
                 (descriptor.extensionReceiverParameter?.let { 1 } ?: 0)
+        val container = computeDeclarationContainer(descriptor)
 
         when {
             descriptor.isVar -> when (receiverCount) {
-                0 -> return KMutableProperty0Impl<Any?>(this, descriptor)
-                1 -> return KMutableProperty1Impl<Any?, Any?>(this, descriptor)
-                2 -> return KMutableProperty2Impl<Any?, Any?, Any?>(this, descriptor)
+                0 -> return KMutableProperty0Impl<Any?>(container, descriptor)
+                1 -> return KMutableProperty1Impl<Any?, Any?>(container, descriptor)
+                2 -> return KMutableProperty2Impl<Any?, Any?, Any?>(container, descriptor)
             }
             else -> when (receiverCount) {
-                0 -> return KProperty0Impl<Any?>(this, descriptor)
-                1 -> return KProperty1Impl<Any?, Any?>(this, descriptor)
-                2 -> return KProperty2Impl<Any?, Any?, Any?>(this, descriptor)
+                0 -> return KProperty0Impl<Any?>(container, descriptor)
+                1 -> return KProperty1Impl<Any?, Any?>(container, descriptor)
+                2 -> return KProperty2Impl<Any?, Any?, Any?>(container, descriptor)
             }
         }
 
         throw KotlinReflectionInternalError("Unsupported property: $descriptor")
+    }
+
+    private fun <D : CallableMemberDescriptor> unwrapFakeOverride(descriptor: D): D {
+        // We use DescriptorUtils.unwrapFakeOverride consciously; in case there are several declarations in the hierarchy, we use
+        // the first one. Java reflection behaves similarly.
+        @Suppress("UNCHECKED_CAST")
+        return DescriptorUtils.unwrapFakeOverride(descriptor).original as D
+    }
+
+    private fun computeDeclarationContainer(descriptor: CallableMemberDescriptor): KDeclarationContainerImpl {
+        val receiverParameter = descriptor.dispatchReceiverParameter ?: return this
+        val receiverValue = receiverParameter.value
+        val receiverDescriptor = receiverValue.type.constructor.declarationDescriptor
+        if (receiverDescriptor !is ClassDescriptor) {
+            throw KotlinReflectionInternalError("Receiver parameter descriptor should be a class: $receiverDescriptor ($descriptor)")
+        }
+        return receiverDescriptor.toJavaClass()?.kotlin as KClassImpl<*>? ?: this
     }
 
     fun findPropertyDescriptor(name: String, signature: String): PropertyDescriptor {

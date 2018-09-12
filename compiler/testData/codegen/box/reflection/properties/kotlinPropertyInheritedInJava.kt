@@ -40,7 +40,7 @@ fun box(): String {
     if (klass.declaredMemberExtensionProperties.isNotEmpty()) return "Fail: declaredMemberExtensionProperties should be empty"
 
     val prop2 = klass.memberProperties.firstOrNull { it.name == "prop" } ?: "Fail: no 'prop' property in memberProperties"
-    if (prop != prop2) return "Fail: property references from :: and from properties differ: $prop != $prop2"
+    if (prop == prop2) return "Fail: property reference for fake override J.prop is the same as the property for K.prop from J::class.properties: $prop == $prop2"
     if (prop2 !is KMutableProperty1<*, *>) return "Fail instanceof 2"
     (prop2 as KMutableProperty1<J, String>).set(j, "::)")
     if (prop.get(j) != "::)") return "Fail get after 2: ${prop.get(j)}"
