@@ -352,12 +352,11 @@ public fun Random.nextUInt(until: UInt): UInt = nextUInt(0u, until)
 public fun Random.nextUInt(from: UInt, until: UInt): UInt {
     checkUIntRangeBounds(from, until)
 
-    val originTransformedToInt = from.toInt() xor Int.MIN_VALUE
-    val boundTransformedToInt = until.toInt() xor Int.MIN_VALUE
+    val signedFrom = from.toInt() xor Int.MIN_VALUE
+    val signedUntil = until.toInt() xor Int.MIN_VALUE
 
-    val randomValueTransformedBack = nextInt(originTransformedToInt, boundTransformedToInt) xor Int.MIN_VALUE
-
-    return randomValueTransformedBack.toUInt()
+    val signedResult = nextInt(signedFrom, signedUntil) xor Int.MIN_VALUE
+    return signedResult.toUInt()
 }
 
 /**
@@ -409,11 +408,11 @@ public fun Random.nextULong(until: ULong): ULong = nextULong(0uL, until)
 public fun Random.nextULong(from: ULong, until: ULong): ULong {
     checkULongRangeBounds(from, until)
 
-    val originTransformedToLong = from.toLong() xor Long.MIN_VALUE
-    val boundTransformedToLong = until.toLong() xor Long.MIN_VALUE
+    val signedFrom = from.toLong() xor Long.MIN_VALUE
+    val signedUntil = until.toLong() xor Long.MIN_VALUE
 
-    val randomValueTransformedBack = nextLong(originTransformedToLong, boundTransformedToLong) xor Long.MIN_VALUE
-    return randomValueTransformedBack.toULong()
+    val signedResult = nextLong(signedFrom, signedUntil) xor Long.MIN_VALUE
+    return signedResult.toULong()
 }
 
 /**
@@ -472,10 +471,10 @@ internal expect fun doubleFromParts(hi26: Int, low27: Int): Double
 internal fun Int.takeUpperBits(bitCount: Int): Int =
     this.ushr(32 - bitCount) and (-bitCount).shr(31)
 
-internal fun checkRangeBounds(origin: Int, bound: Int) = require(bound > origin) { boundsErrorMessage(origin, bound) }
-internal fun checkUIntRangeBounds(origin: UInt, bound: UInt) = require(bound > origin) { boundsErrorMessage(origin, bound) }
-internal fun checkRangeBounds(origin: Long, bound: Long) = require(bound > origin) { boundsErrorMessage(origin, bound) }
-internal fun checkULongRangeBounds(origin: ULong, bound: ULong) = require(bound > origin) { boundsErrorMessage(origin, bound) }
-internal fun checkRangeBounds(origin: Double, bound: Double) = require(bound > origin) { boundsErrorMessage(origin, bound) }
+internal fun checkRangeBounds(from: Int, until: Int) = require(until > from) { boundsErrorMessage(from, until) }
+internal fun checkUIntRangeBounds(from: UInt, until: UInt) = require(until > from) { boundsErrorMessage(from, until) }
+internal fun checkRangeBounds(from: Long, until: Long) = require(until > from) { boundsErrorMessage(from, until) }
+internal fun checkULongRangeBounds(from: ULong, until: ULong) = require(until > from) { boundsErrorMessage(from, until) }
+internal fun checkRangeBounds(from: Double, until: Double) = require(until > from) { boundsErrorMessage(from, until) }
 
-private fun boundsErrorMessage(origin: Any, bound: Any) = "Random range is empty: [$origin, $bound)."
+private fun boundsErrorMessage(from: Any, until: Any) = "Random range is empty: [$from, $until)."
