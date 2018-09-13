@@ -4483,16 +4483,18 @@ public abstract interface class kotlin/sequences/Sequence {
 	public abstract fun iterator ()Ljava/util/Iterator;
 }
 
-public abstract class kotlin/sequences/SequenceBuilder {
+public final class kotlin/sequences/SequenceBuilderKt {
+	public static final fun buildIterator (Lkotlin/jvm/functions/Function2;)Ljava/util/Iterator;
+	public static final fun buildSequence (Lkotlin/jvm/functions/Function2;)Lkotlin/sequences/Sequence;
+	public static final fun iterator (Lkotlin/jvm/functions/Function2;)Ljava/util/Iterator;
+	public static final fun sequence (Lkotlin/jvm/functions/Function2;)Lkotlin/sequences/Sequence;
+}
+
+public abstract class kotlin/sequences/SequenceScope {
 	public abstract fun yield (Ljava/lang/Object;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public final fun yieldAll (Ljava/lang/Iterable;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun yieldAll (Ljava/util/Iterator;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public final fun yieldAll (Lkotlin/sequences/Sequence;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-}
-
-public final class kotlin/sequences/SequenceBuilderKt {
-	public static final fun buildIterator (Lkotlin/jvm/functions/Function2;)Ljava/util/Iterator;
-	public static final fun buildSequence (Lkotlin/jvm/functions/Function2;)Lkotlin/sequences/Sequence;
 }
 
 public final class kotlin/sequences/SequencesKt {
