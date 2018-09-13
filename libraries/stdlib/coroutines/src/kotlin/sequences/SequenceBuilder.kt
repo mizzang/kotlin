@@ -4,7 +4,7 @@
  */
 
 @file:kotlin.jvm.JvmMultifileClass
-@file:kotlin.jvm.JvmName("SequenceBuilderKt") // TODO: Merge into SequencesKt
+@file:kotlin.jvm.JvmName("SequencesKt")
 
 package kotlin.sequences
 
