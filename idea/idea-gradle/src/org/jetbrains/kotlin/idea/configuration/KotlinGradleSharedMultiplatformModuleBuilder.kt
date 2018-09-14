@@ -74,12 +74,10 @@ class KotlinGradleSharedMultiplatformModuleBuilder : KotlinGradleAbstractMultipl
                     }
                     $nativeSourceName {
                         dependencies {
-                            implementation 'org.jetbrains.kotlin:kotlin-stdlib-native'
                         }
                     }
                     $nativeTestName {
                         dependencies {
-                            implementation 'org.jetbrains.kotlin:kotlin-test-native'
                         }
                     }
                 }
