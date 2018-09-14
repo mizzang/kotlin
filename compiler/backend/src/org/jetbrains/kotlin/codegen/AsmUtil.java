@@ -11,6 +11,9 @@ import com.intellij.openapi.util.Pair;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.util.ArrayUtil;
 import kotlin.Unit;
+import kotlin.collections.CollectionsKt;
+import kotlin.jvm.functions.Function1;
+import org.apache.commons.io.filefilter.NameFileFilter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.kotlin.builtins.KotlinBuiltIns;
@@ -43,6 +46,8 @@ import org.jetbrains.kotlin.resolve.inline.InlineUtil;
 import org.jetbrains.kotlin.resolve.jvm.*;
 import org.jetbrains.kotlin.resolve.jvm.checkers.DalvikIdentifierUtils;
 import org.jetbrains.kotlin.resolve.jvm.diagnostics.JvmDeclarationOrigin;
+import org.jetbrains.kotlin.resolve.scopes.DescriptorKindFilter;
+import org.jetbrains.kotlin.resolve.scopes.MemberScope;
 import org.jetbrains.kotlin.serialization.DescriptorSerializer;
 import org.jetbrains.kotlin.synthetic.SyntheticJavaPropertyDescriptor;
 import org.jetbrains.kotlin.types.KotlinType;
@@ -51,10 +56,7 @@ import org.jetbrains.org.objectweb.asm.*;
 import org.jetbrains.org.objectweb.asm.commons.InstructionAdapter;
 import org.jetbrains.org.objectweb.asm.commons.Method;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import static org.jetbrains.kotlin.builtins.KotlinBuiltIns.isBoolean;
 import static org.jetbrains.kotlin.builtins.KotlinBuiltIns.isPrimitiveClass;
@@ -554,11 +556,19 @@ public class AsmUtil {
             if (isEnumEntry(containingDeclaration)) {
                 return NO_FLAG_PACKAGE_PRIVATE;
             }
-            if (isEnumClass(containingDeclaration)) {
-                //TODO: should be ACC_PRIVATE
-                // see http://youtrack.jetbrains.com/issue/KT-2680
-                return ACC_PROTECTED;
-            }
+            //if (isEnumClass(containingDeclaration)) {
+            //    Collection<DeclarationDescriptor> descriptors = ((ClassDescriptor) containingDeclaration).getUnsubstitutedMemberScope()
+            //            .getContributedDescriptors(DescriptorKindFilter.CLASSIFIERS,
+            //                                       MemberScope.Companion.getALL_NAME_FILTER());
+            //    CollectionsKt.any(descriptors, new Function1<DeclarationDescriptor, Boolean>() {
+            //        @Override
+            //        public Boolean invoke(DeclarationDescriptor descriptor) {
+            //            return enumEntryNeedSubclass(state);
+            //        }
+            //    })
+            //    // There is an javac fail on attempt to read synthetic accessor for enum constructor, further investigation is required: see 'annotatedParameter2.kt' test
+            //    return ACC_PROTECTED;
+            //}
         }
 
         return null;
