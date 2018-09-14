@@ -21,7 +21,7 @@ import kotlin.coroutines.intrinsics.*
  * @sample samples.collections.Sequences.Building.buildFibonacciSequence
  */
 @SinceKotlin("1.3")
-public fun <T> sequence(builderAction: suspend SequenceScope<T>.() -> Unit): Sequence<T> = Sequence { iterator(builderAction) }
+public fun <T> sequence(block: suspend SequenceScope<T>.() -> Unit): Sequence<T> = Sequence { iterator(block) }
 
 @SinceKotlin("1.3")
 @Deprecated("Use sequence instead.", ReplaceWith("sequence(builderAction)"), level = DeprecationLevel.ERROR)
@@ -34,9 +34,9 @@ public fun <T> buildSequence(builderAction: suspend SequenceScope<T>.() -> Unit)
  * @sample samples.collections.Iterables.Building.iterable
  */
 @SinceKotlin("1.3")
-public fun <T> iterator(builderAction: suspend SequenceScope<T>.() -> Unit): Iterator<T> {
+public fun <T> iterator(block: suspend SequenceScope<T>.() -> Unit): Iterator<T> {
     val iterator = SequenceBuilderIterator<T>()
-    iterator.nextStep = builderAction.createCoroutineUnintercepted(receiver = iterator, completion = iterator)
+    iterator.nextStep = block.createCoroutineUnintercepted(receiver = iterator, completion = iterator)
     return iterator
 }
 
