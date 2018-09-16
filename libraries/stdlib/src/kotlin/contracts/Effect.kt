@@ -8,7 +8,10 @@ package kotlin.contracts
 import kotlin.internal.ContractsDsl
 
 /**
- * Abstract effect, the inheritors of which are used in [ContractBuilder] to describe the contract function.
+ * Abstract effect, the inheritors of which are used in [ContractBuilder] to describe the contract of a function.
+ *
+ * @see ConditionalEffect
+ * @see SimpleEffect
  */
 @ContractsDsl
 @ExperimentalContracts
@@ -27,7 +30,7 @@ public interface Effect
 public interface ConditionalEffect : Effect
 
 /**
- * Describes of function's behavior regardless of any conditions.
+ * Describes the effect of a function invocation the compiler should count on.
  */
 @ContractsDsl
 @ExperimentalContracts
