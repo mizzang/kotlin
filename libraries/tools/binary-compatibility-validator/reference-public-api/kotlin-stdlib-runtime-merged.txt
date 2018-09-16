@@ -4510,8 +4510,6 @@ public final class kotlin/sequences/SequencesKt {
 	public static final fun averageOfInt (Lkotlin/sequences/Sequence;)D
 	public static final fun averageOfLong (Lkotlin/sequences/Sequence;)D
 	public static final fun averageOfShort (Lkotlin/sequences/Sequence;)D
-	public static final fun buildIterator (Lkotlin/jvm/functions/Function2;)Ljava/util/Iterator;
-	public static final fun buildSequence (Lkotlin/jvm/functions/Function2;)Lkotlin/sequences/Sequence;
 	public static final fun chunked (Lkotlin/sequences/Sequence;I)Lkotlin/sequences/Sequence;
 	public static final fun chunked (Lkotlin/sequences/Sequence;ILkotlin/jvm/functions/Function1;)Lkotlin/sequences/Sequence;
 	public static final fun constrainOnce (Lkotlin/sequences/Sequence;)Lkotlin/sequences/Sequence;

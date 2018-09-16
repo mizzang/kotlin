@@ -25,7 +25,8 @@ public fun <T> sequence(block: suspend SequenceScope<T>.() -> Unit): Sequence<T>
 
 @SinceKotlin("1.3")
 @Deprecated("Use sequence instead.", ReplaceWith("sequence(builderAction)"), level = DeprecationLevel.ERROR)
-public fun <T> buildSequence(builderAction: suspend SequenceScope<T>.() -> Unit): Sequence<T> = Sequence { iterator(builderAction) }
+@kotlin.internal.InlineOnly
+public inline fun <T> buildSequence(noinline builderAction: suspend SequenceScope<T>.() -> Unit): Sequence<T> = Sequence { iterator(builderAction) }
 
 /**
  * Builds an [Iterator] lazily yielding values one by one.
@@ -42,7 +43,8 @@ public fun <T> iterator(block: suspend SequenceScope<T>.() -> Unit): Iterator<T>
 
 @SinceKotlin("1.3")
 @Deprecated("Use iterator instead.", ReplaceWith("iterator(builderAction)"), level = DeprecationLevel.ERROR)
-public fun <T> buildIterator(builderAction: suspend SequenceScope<T>.() -> Unit): Iterator<T> = iterator(builderAction)
+@kotlin.internal.InlineOnly
+public inline fun <T> buildIterator(noinline builderAction: suspend SequenceScope<T>.() -> Unit): Iterator<T> = iterator(builderAction)
 
 /**
  * The scope for yielding values of a [Sequence] or an [Iterator], provides [yield] and [yieldAll] suspension functions.
