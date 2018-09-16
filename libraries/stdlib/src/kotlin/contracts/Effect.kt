@@ -35,7 +35,7 @@ public interface ConditionalEffect : Effect
 @ContractsDsl
 @ExperimentalContracts
 @SinceKotlin("1.3")
-public interface SimpleEffect : Effect {
+public interface SimpleEffect {
     /**
      * The function to specify an additional condition for some `SimpleEffect`.
      *
