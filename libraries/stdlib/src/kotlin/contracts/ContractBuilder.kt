@@ -9,9 +9,12 @@ import kotlin.internal.ContractsDsl
 import kotlin.internal.InlineOnly
 
 /**
- * Marker of the use experimental contracts API.
- * Any declaration annotated with that marker must be used with the [UseExperimental] annotation
- * or the compiler argument `-Xuse-experimental=kotlin.contracts.ExperimentalContracts`.
+ * The experimental contract declaration marker. This marker distinguishes the API that is used to declare
+ * function contracts in their bodies.
+ *
+ * Any usage of a declaration annotated with `@ExperimentalContracts` must be accepted either by
+ * annotating that usage with the [UseExperimental] annotation, e.g. `@UseExperimental(ExperimentalContracts::class)`,
+ * or by using the compiler argument `-Xuse-experimental=kotlin.contracts.ExperimentalContracts`.
  */
 @Retention(AnnotationRetention.BINARY)
 @SinceKotlin("1.3")
