@@ -3,18 +3,17 @@
  * that can be found in the license/LICENSE.txt file.
  */
 
-package org.jetbrains.kotlin.ir.backend.js.lower
+package org.jetbrains.kotlin.ir.backend.js.lower.coroutines
 
 import org.jetbrains.kotlin.backend.common.FileLoweringPass
 import org.jetbrains.kotlin.backend.common.isBuiltInIntercepted
 import org.jetbrains.kotlin.backend.common.isBuiltInSuspendCoroutineUninterceptedOrReturn
 import org.jetbrains.kotlin.config.languageVersionSettings
 import org.jetbrains.kotlin.ir.backend.js.JsIrBackendContext
+import org.jetbrains.kotlin.ir.backend.js.ir.irCall
 import org.jetbrains.kotlin.ir.declarations.IrFile
-import org.jetbrains.kotlin.ir.declarations.IrFunction
 import org.jetbrains.kotlin.ir.expressions.IrCall
 import org.jetbrains.kotlin.ir.expressions.IrExpression
-import org.jetbrains.kotlin.ir.expressions.impl.IrCallImpl
 import org.jetbrains.kotlin.ir.visitors.IrElementTransformerVoid
 import org.jetbrains.kotlin.ir.visitors.transformChildrenVoid
 
@@ -26,34 +25,14 @@ class CoroutineIntrinsicLowering(val context: JsIrBackendContext): FileLoweringP
                 val call = super.visitCall(expression)
                 return when {
                     expression.descriptor.isBuiltInSuspendCoroutineUninterceptedOrReturn(languageVersion) ->
-                        copyCall(expression, context.coroutineSuspendOrReturn.owner)
+                        irCall(expression, context.coroutineSuspendOrReturn)
                     expression.descriptor.isBuiltInIntercepted(languageVersion) ->
                         error("Intercepted should not be used with release coroutines")
                     expression.symbol.owner == context.intrinsics.jsCoroutineContext.owner ->
-                        copyCall(expression, context.coroutineGetContextJs.owner)
+                        irCall(expression, context.coroutineGetContextJs)
                     else -> call
                 }
             }
         })
-    }
-
-    private fun copyCall(expression: IrCall, function: IrFunction) = expression.run {
-        IrCallImpl(
-            startOffset,
-            endOffset,
-            type,
-            function.symbol,
-            function.descriptor,
-            typeArgumentsCount,
-            origin,
-            superQualifierSymbol
-        )
-    }.also {
-        for (i in 0 until expression.valueArgumentsCount) {
-            it.putValueArgument(i, expression.getValueArgument(i))
-        }
-        for (i in 0 until expression.typeArgumentsCount) {
-            it.putTypeArgument(i, expression.getTypeArgument(i))
-        }
     }
 }
