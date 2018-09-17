@@ -80,6 +80,7 @@ abstract class KotlinBasePluginWrapper(
                 compatibilityRules.add(KotlinPlatformType.CompatibilityRule::class.java)
             }
         }
+        KotlinUsages.setupAttributesMatchingStrategy(this)
     }
 
     internal abstract fun getPlugin(

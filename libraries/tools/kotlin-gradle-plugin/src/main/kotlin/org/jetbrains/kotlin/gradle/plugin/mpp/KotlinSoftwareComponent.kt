@@ -93,10 +93,10 @@ internal class KotlinPlatformUsageContext(
 ) : UsageContext {
     override fun getUsage(): Usage = usage
 
-    override fun getName(): String = kotlinTarget.targetName + when (usage.name) {
-        Usage.JAVA_API -> "-api"
-        Usage.JAVA_RUNTIME -> "-runtime"
-        else -> error("unexpected usage")
+    override fun getName(): String = kotlinTarget.targetName + when (dependencyConfigurationName) {
+        kotlinTarget.apiElementsConfigurationName -> "-api"
+        kotlinTarget.runtimeElementsConfigurationName -> "-runtime"
+        else -> error("unexpected configuration")
     }
 
     private val configuration: Configuration
